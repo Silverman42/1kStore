@@ -34,7 +34,8 @@ Vue.component("countdown", {
             days: 0,
             hours: 0,
             minutes: 0,
-            seconds: 0
+            seconds: 0,
+            stopInterval: false
         }
     },
     methods: {
@@ -54,10 +55,9 @@ Vue.component("countdown", {
             this.seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
 
-            // If the count down is finished, write some text
-            if (distance < 0) {
-                clearInterval(x);
-                document.getElementById("demo").innerHTML = "EXPIRED";
+            // If the count down is finished, stop the count
+            if (distance <= 0) {
+                this.stopTimer = true;
             }
         },
         
@@ -66,7 +66,8 @@ Vue.component("countdown", {
         **@description: Check if the browser tab has been switched
         */
        observeTabSwitch(callback, intervalTime){
-        var hidden
+            var vm = this
+            var hidden
             var visibilityChange
             if(typeof document.hidden !== "undefined"){
                 hidden = "hidden"
@@ -85,7 +86,7 @@ Vue.component("countdown", {
             }, intervalTime)
 
             window.addEventListener(visibilityChange,function () {
-                if(document[hidden]) {
+                if(document[hidden] || vm.stopInterval === true) {
                     console.log('hidden')
                     return clearInterval(startAutoplay)
                 } 
